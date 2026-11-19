@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f4f5f7;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --secondary: #eff6ff;
+  --secondary-foreground: #1e3a8a;
+  --accent: #0284c7;
+  --accent-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --border: #e2e8f0;
+  --ring: #2563eb;
+  --brand-ruby: #be123c;
+  --login-hero-from: #0ea5e9;
+  --login-hero-via: #1d4ed8;
+  --login-hero-to: #061539;
+  --clinical-normal: #16a34a;
+  --clinical-normal-soft: #dcfce7;
+  --clinical-normal-foreground: #14532d;
+  --clinical-warning: #d97706;
+  --clinical-warning-soft: #fef3c7;
+  --clinical-warning-foreground: #78350f;
+  --clinical-critical: #dc2626;
+  --clinical-critical-soft: #fee2e2;
+  --clinical-critical-foreground: #7f1d1d;
+}
+
+.dark {
+  --background: #0a0d14;
+  --foreground: #f8fafc;
+  --card: #111622;
+  --card-foreground: #f8fafc;
+  --primary: #2563eb;
+  --primary-hover: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #161b26;
+  --secondary-foreground: #f8fafc;
+  --accent: #38bdf8;
+  --accent-foreground: #0a0d14;
+  --muted: #161b26;
+  --muted-foreground: #94a3b8;
+  --border: #1e293b;
+  --ring: #38bdf8;
+  --brand-ruby: #fb7185;
+  --login-hero-from: #0284c7;
+  --login-hero-via: #1e3a8a;
+  --login-hero-to: #050b1c;
+  --clinical-normal: #22c55e;
+  --clinical-normal-soft: #052e16;
+  --clinical-normal-foreground: #bbf7d0;
+  --clinical-warning: #f59e0b;
+  --clinical-warning-soft: #451a03;
+  --clinical-warning-foreground: #fde68a;
+  --clinical-critical: #ef4444;
+  --clinical-critical-soft: #450a0a;
+  --clinical-critical-foreground: #fecaca;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-brand-ruby: var(--brand-ruby);
+  --color-login-hero-from: var(--login-hero-from);
+  --color-login-hero-via: var(--login-hero-via);
+  --color-login-hero-to: var(--login-hero-to);
+  --color-clinical-normal: var(--clinical-normal);
+  --color-clinical-normal-soft: var(--clinical-normal-soft);
+  --color-clinical-normal-foreground: var(--clinical-normal-foreground);
+  --color-clinical-warning: var(--clinical-warning);
+  --color-clinical-warning-soft: var(--clinical-warning-soft);
+  --color-clinical-warning-foreground: var(--clinical-warning-foreground);
+  --color-clinical-critical: var(--clinical-critical);
+  --color-clinical-critical-soft: var(--clinical-critical-soft);
+  --color-clinical-critical-foreground: var(--clinical-critical-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
