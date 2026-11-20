@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Activity,
+  ChevronDown,
   ClipboardPlus,
   FlaskConical,
   FolderClock,
@@ -14,6 +15,7 @@ import {
   Stethoscope,
   TrendingUp,
 } from "lucide-react";
+import { NewDiagnosticStudyModal } from "@/components/portal/imagenes/NewDiagnosticStudyModal";
 import { NewLabModal } from "@/components/portal/pruebas/NewLabModal";
 import { useHce } from "@/components/shared/providers/HceProvider";
 import { Badge } from "@/components/shared/ui/Badge";
@@ -35,13 +37,32 @@ import { formatClinicalDate } from "@/lib/format/es-pe";
 
 export function HealthSummaryView() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const { db, addDiagnosis } = useHce();
 
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [labModalOpen, setLabModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const [dxModalOpen, setDxModalOpen] = useState(false);
   const [dxCode, setDxCode] = useState("");
   const [dxDesc, setDxDesc] = useState("");
   const [dxStatus, setDxStatus] = useState<"activo" | "controlado">("activo");
+
+  useEffect(() => {
+    if (!actionMenuOpen) return;
+    function handleClose() {
+      setActionMenuOpen(false);
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setActionMenuOpen(false);
+    }
+    window.addEventListener("click", handleClose);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("click", handleClose);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [actionMenuOpen]);
 
   const patient = db.patients.find((p) => p.id === params.id);
 
@@ -163,21 +184,124 @@ export function HealthSummaryView() {
             activos, medicación y última evaluación.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
           <Button
-            variant="outline"
             size="sm"
-            onClick={() => setLabModalOpen(true)}
+            aria-haspopup="menu"
+            aria-expanded={actionMenuOpen}
+            onClick={() => setActionMenuOpen((prev) => !prev)}
           >
             <Plus className="h-3.5 w-3.5" strokeWidth={1.75} />
-            Nuevo laboratorio
+            Nuevo registro
+            <ChevronDown className="h-3.5 w-3.5" strokeWidth={1.75} />
           </Button>
-          <Link href={`/portal/pacientes/${patient.id}/evolucion`}>
-            <Button size="sm">
-              <ClipboardPlus className="h-3.5 w-3.5" strokeWidth={1.75} />
-              Nueva evolución
-            </Button>
-          </Link>
+
+          {actionMenuOpen && (
+            <div
+              role="menu"
+              className="border-border bg-card absolute top-full right-0 z-20 mt-1.5 w-60 overflow-hidden rounded-xl border py-1.5 shadow-lg"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  router.push(`/portal/pacientes/${patient.id}/evolucion`);
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <ClipboardPlus
+                  className="text-primary h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Nueva evolución SOAP
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  setLabModalOpen(true);
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <FlaskConical
+                  className="text-primary h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Nuevo resultado de laboratorio
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  setImageModalOpen(true);
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <ImageIcon
+                  className="text-primary h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Nueva imagen diagnóstica
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  setDxModalOpen(true);
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <Stethoscope
+                  className="text-primary h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Nuevo diagnóstico (CIE-10)
+              </button>
+
+              <div className="border-border my-1 border-t" />
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  router.push(
+                    `/portal/pacientes/${patient.id}/evolucion#vitales`,
+                  );
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <Activity
+                  className="text-muted-foreground h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Registrar signos vitales
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setActionMenuOpen(false);
+                  router.push(`/portal/pacientes/${patient.id}/medicamentos`);
+                }}
+                className="text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-xs font-medium transition-colors"
+              >
+                <Pill
+                  className="text-muted-foreground h-4 w-4 shrink-0"
+                  strokeWidth={1.75}
+                />
+                Prescribir medicamento
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -494,6 +618,12 @@ export function HealthSummaryView() {
       <NewLabModal
         open={labModalOpen}
         onClose={() => setLabModalOpen(false)}
+        patient={patient}
+      />
+
+      <NewDiagnosticStudyModal
+        open={imageModalOpen}
+        onClose={() => setImageModalOpen(false)}
         patient={patient}
       />
 

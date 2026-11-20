@@ -13,6 +13,7 @@ import {
   type CreateDiagnosticStudyInput,
   type CreateLabResultInput,
   type CreatePatientInput,
+  type UpdatePatientInput,
 } from "@/services/hce-repository";
 import type {
   Allergy,
@@ -103,6 +104,8 @@ interface HceContextValue {
   removeAllergy: (patientId: string, allergyId: string) => void;
   updateHistory: (patientId: string, history: MedicalHistory) => void;
   updatePatientPhoto: (patientId: string, photoUrl?: string) => void;
+  updatePatient: (patientId: string, input: UpdatePatientInput) => void;
+  deletePatient: (patientId: string) => void;
   updateDoctorPhoto: (photoUrl?: string) => void;
   addDiagnosticStudy: (input: CreateDiagnosticStudyInput) => DiagnosticStudy;
   resetDemoData: () => void;
@@ -196,6 +199,19 @@ export function HceProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const updatePatient = useCallback(
+    (patientId: string, input: UpdatePatientInput) => {
+      hceRepository.updatePatient(patientId, input);
+      refreshSnapshot();
+    },
+    [],
+  );
+
+  const deletePatient = useCallback((patientId: string) => {
+    hceRepository.deletePatient(patientId);
+    refreshSnapshot();
+  }, []);
+
   const updateDoctorPhoto = useCallback((photoUrl?: string) => {
     hceRepository.updateDoctorPhoto(photoUrl);
     refreshSnapshot();
@@ -233,6 +249,8 @@ export function HceProvider({ children }: { children: ReactNode }) {
       removeAllergy,
       updateHistory,
       updatePatientPhoto,
+      updatePatient,
+      deletePatient,
       updateDoctorPhoto,
       addDiagnosticStudy,
       resetDemoData,
@@ -252,6 +270,8 @@ export function HceProvider({ children }: { children: ReactNode }) {
       removeAllergy,
       updateHistory,
       updatePatientPhoto,
+      updatePatient,
+      deletePatient,
       updateDoctorPhoto,
       addDiagnosticStudy,
       resetDemoData,

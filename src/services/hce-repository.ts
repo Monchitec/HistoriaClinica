@@ -66,12 +66,13 @@ function readDb(): HceDatabase {
       demoSeed.patients.map((p) => [p.id, p.photoUrl]),
     );
 
-    // Migración suave para navegadores con datos previos en localStorage
+    // Migración suave única para navegadores con datos previos en localStorage
+    const needsV2Backfill = !Array.isArray(parsed.diagnosticStudies);
     const existingPatients = parsed.patients ?? demoSeed.patients;
     const existingPatientIds = new Set(existingPatients.map((p) => p.id));
-    const missingDemoPatients = demoSeed.patients.filter(
-      (p) => !existingPatientIds.has(p.id),
-    );
+    const missingDemoPatients = needsV2Backfill
+      ? demoSeed.patients.filter((p) => !existingPatientIds.has(p.id))
+      : [];
     const missingDemoPatientIds = new Set(missingDemoPatients.map((p) => p.id));
 
     const hydratedPatients = [
@@ -133,6 +134,18 @@ export interface CreatePatientInput {
   initialAllergy?: string;
   initialDiagnosisCode?: string;
   initialDiagnosisDesc?: string;
+}
+
+export interface UpdatePatientInput {
+  fullName: string;
+  dni: string;
+  birthDate: string;
+  sex: Patient["sex"];
+  phone: string;
+  insurance: Patient["insurance"];
+  bloodGroup: string;
+  hcNumber?: string;
+  photoUrl?: string;
 }
 
 export interface CreateDiagnosticStudyInput {
@@ -484,6 +497,53 @@ export const hceRepository = {
               updatedAt: new Date().toISOString(),
             }
           : p,
+      ),
+    };
+    writeDb(nextDb);
+    return nextDb;
+  },
+
+  updatePatient(patientId: string, input: UpdatePatientInput): HceDatabase {
+    const db = readDb();
+    const nowIso = new Date().toISOString();
+    const nextDb: HceDatabase = {
+      ...db,
+      patients: db.patients.map((p) =>
+        p.id === patientId
+          ? {
+              ...p,
+              fullName: input.fullName.trim(),
+              dni: input.dni.trim(),
+              birthDate: input.birthDate,
+              sex: input.sex,
+              phone: input.phone.trim() || "Sin teléfono",
+              insurance: input.insurance,
+              bloodGroup: input.bloodGroup || p.bloodGroup,
+              hcNumber: input.hcNumber?.trim() || p.hcNumber,
+              photoUrl:
+                input.photoUrl !== undefined
+                  ? input.photoUrl.trim() || undefined
+                  : p.photoUrl,
+              updatedAt: nowIso,
+            }
+          : p,
+      ),
+    };
+    writeDb(nextDb);
+    return nextDb;
+  },
+
+  deletePatient(patientId: string): HceDatabase {
+    const db = readDb();
+    const nextDb: HceDatabase = {
+      ...db,
+      patients: db.patients.filter((p) => p.id !== patientId),
+      labResults: db.labResults.filter((r) => r.patientId !== patientId),
+      vitals: db.vitals.filter((v) => v.patientId !== patientId),
+      soapNotes: db.soapNotes.filter((n) => n.patientId !== patientId),
+      medications: db.medications.filter((m) => m.patientId !== patientId),
+      diagnosticStudies: db.diagnosticStudies.filter(
+        (s) => s.patientId !== patientId,
       ),
     };
     writeDb(nextDb);

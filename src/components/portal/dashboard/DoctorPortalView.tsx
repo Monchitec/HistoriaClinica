@@ -4,17 +4,13 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
-  ArrowRight,
   ChevronDown,
   ChevronUp,
   ClipboardCheck,
-  FlaskConical,
   HeartPulse,
-  Search,
   TrendingUp,
   UserPlus,
   Users,
-  X,
 } from "lucide-react";
 import { ClinicalActivityChart } from "@/components/portal/dashboard/ClinicalActivityChart";
 import { DiagnosisPrevalenceCard } from "@/components/portal/dashboard/DiagnosisPrevalenceCard";
@@ -31,8 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/ui/Card";
-import { Input } from "@/components/shared/ui/Input";
-import { calculateAge } from "@/lib/clinical/calculators";
 import {
   buildClinicalAlerts,
   buildClinicalKpiSummary,
@@ -52,7 +46,6 @@ type AlertSeverityFilter = "all" | "critical" | "warning";
 export function DoctorPortalView() {
   const { db, session } = useHce();
   const { labResults, patients, soapNotes, vitals } = db;
-  const [searchQuery, setSearchQuery] = useState("");
   const [newPatientOpen, setNewPatientOpen] = useState(false);
   const [alertFilter, setAlertFilter] = useState<AlertSeverityFilter>("all");
   const [alertsExpanded, setAlertsExpanded] = useState(true);
@@ -113,20 +106,6 @@ export function DoctorPortalView() {
     [patients],
   );
 
-  const quickSearchResults = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return [];
-    return patients.filter(
-      (p) =>
-        p.fullName.toLowerCase().includes(q) ||
-        p.dni.toLowerCase().includes(q) ||
-        p.hcNumber.toLowerCase().includes(q) ||
-        p.diagnoses.some((d) =>
-          `${d.code} ${d.description}`.toLowerCase().includes(q),
-        ),
-    );
-  }, [patients, searchQuery]);
-
   const filteredAlerts = useMemo(() => {
     if (alertFilter === "all") return latestClinicalAlerts;
     return latestClinicalAlerts.filter(
@@ -134,11 +113,9 @@ export function DoctorPortalView() {
     );
   }, [latestClinicalAlerts, alertFilter]);
 
-  const hasSearch = searchQuery.trim().length > 0;
-
   return (
     <div className="space-y-6">
-      {/* Cabecera ejecutiva + Buscador inmediato */}
+      {/* Cabecera ejecutiva */}
       <section className="border-border bg-card rounded-2xl border p-5 shadow-xs sm:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
@@ -155,123 +132,13 @@ export function DoctorPortalView() {
               <h1 className="text-foreground mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
                 Bienvenido, {session?.name ?? "Doctor"}
               </h1>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Dashboard ejecutivo de Medicina Interna: estratificación de
-                cohorte, efectividad analítica y actividad asistencial.
-              </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Link href="/portal/pacientes">
-              <Button variant="outline" size="lg">
-                <Users className="h-4 w-4" strokeWidth={1.75} />
-                Directorio
-              </Button>
-            </Link>
-            <Button size="lg" onClick={() => setNewPatientOpen(true)}>
-              <UserPlus className="h-4 w-4" strokeWidth={1.75} />
-              Nuevo paciente
-            </Button>
-          </div>
+          <Button size="lg" onClick={() => setNewPatientOpen(true)}>
+            <UserPlus className="h-4 w-4" strokeWidth={1.75} />
+            Nuevo paciente
+          </Button>
         </div>
-
-        <div className="relative mt-5">
-          <Search
-            className="text-muted-foreground pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2"
-            strokeWidth={1.75}
-          />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar paciente por Nombre, DNI, N° Historia Clínica o diagnóstico..."
-            aria-label="Buscar paciente en portal médico"
-            className="h-12 pr-10 pl-11 text-sm"
-          />
-          {hasSearch && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              aria-label="Limpiar búsqueda"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer rounded-lg p-1.5 transition-colors focus-visible:ring-2 focus-visible:outline-none"
-            >
-              <X className="h-4 w-4" strokeWidth={1.75} />
-            </button>
-          )}
-        </div>
-
-        {hasSearch && (
-          <div className="border-border bg-background/70 mt-3 rounded-xl border p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-muted-foreground text-xs font-semibold tabular-nums">
-                Coincidencias rápidas ({quickSearchResults.length})
-              </p>
-              <Link
-                href="/portal/pacientes"
-                className="text-primary text-xs font-semibold hover:underline"
-              >
-                Abrir directorio completo
-              </Link>
-            </div>
-
-            {quickSearchResults.length === 0 ? (
-              <p className="text-muted-foreground py-2 text-xs">
-                Sin coincidencias para &ldquo;{searchQuery.trim()}&rdquo;.
-                Prueba con otro nombre, DNI o código CIE-10.
-              </p>
-            ) : (
-              <div className="divide-border divide-y">
-                {quickSearchResults.slice(0, 5).map((patient) => (
-                  <div
-                    key={patient.id}
-                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-1 last:pb-1"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <Avatar
-                        src={patient.photoUrl}
-                        name={patient.fullName}
-                        size="md"
-                      />
-                      <div className="min-w-0">
-                        <Link
-                          href={`/portal/pacientes/${patient.id}`}
-                          className="text-foreground hover:text-primary text-sm font-semibold"
-                        >
-                          {patient.fullName}
-                        </Link>
-                        <p className="text-muted-foreground text-xs tabular-nums">
-                          {calculateAge(patient.birthDate)} años · DNI{" "}
-                          {patient.dni} ·{" "}
-                          <span className="font-mono">{patient.hcNumber}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="primary">{patient.insurance}</Badge>
-                      <Link href={`/portal/pacientes/${patient.id}/pruebas`}>
-                        <Button variant="outline" size="sm">
-                          <FlaskConical
-                            className="h-3.5 w-3.5"
-                            strokeWidth={1.75}
-                          />
-                          Pruebas
-                        </Button>
-                      </Link>
-                      <Link href={`/portal/pacientes/${patient.id}`}>
-                        <Button size="sm">
-                          Ver resumen
-                          <ArrowRight
-                            className="h-3.5 w-3.5"
-                            strokeWidth={1.75}
-                          />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </section>
 
       {/* Fila 1: 4 Tarjetas KPI Ejecutivas con micro-indicadores */}

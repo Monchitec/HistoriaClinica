@@ -48,7 +48,7 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
     },
     {
       href: "/portal/pacientes",
-      label: "Pacientes",
+      label: "Gestionar pacientes",
       icon: Users,
       isActive: pathname === "/portal/pacientes",
     },

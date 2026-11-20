@@ -15,6 +15,7 @@ export function PatientBanner({ patient }: { patient: Patient }) {
   const age = calculateAge(patient.birthDate);
   const sexLabel = patient.sex === "F" ? "Femenino" : "Masculino";
   const hasAllergies = patient.allergies.length > 0;
+  const summaryHref = `/portal/pacientes/${patient.id}`;
 
   async function handlePhotoUpload(file?: File) {
     if (!file) return;
@@ -55,9 +56,12 @@ export function PatientBanner({ patient }: { patient: Patient }) {
           </label>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-foreground text-base font-bold tracking-tight sm:text-lg">
+              <Link
+                href={summaryHref}
+                className="text-foreground hover:text-primary text-base font-bold tracking-tight transition-colors sm:text-lg"
+              >
                 {patient.fullName}
-              </p>
+              </Link>
               <Badge variant="primary">{patient.insurance}</Badge>
             </div>
             <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
