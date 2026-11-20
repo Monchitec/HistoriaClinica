@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { LabResultDetailView } from "@/components/portal/pruebas/LabResultDetailView";
 import { LoadingState } from "@/components/shared/ui/LoadingState";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Detalle de resultado",
   description: "Detalle del resultado con barra proporcional de rango normal.",

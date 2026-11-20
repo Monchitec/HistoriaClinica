@@ -129,21 +129,21 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
   return (
     <aside
       aria-label="Menú lateral del portal médico"
-      className="border-border bg-card flex h-full flex-col justify-between border-r px-3.5 py-5"
+      className="border-border bg-card flex h-full flex-col border-r px-3.5 py-4"
     >
-      <div className="space-y-6">
-        <div className="px-1.5">
-          <Link
-            href="/portal"
-            onClick={onNavigate}
-            className="focus-visible:ring-ring inline-flex rounded-xl focus-visible:ring-2 focus-visible:outline-none"
-          >
-            <RubiLogo />
-          </Link>
-        </div>
+      <div className="shrink-0 px-1.5 pb-4">
+        <Link
+          href="/portal"
+          onClick={onNavigate}
+          className="focus-visible:ring-ring inline-flex rounded-xl focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <RubiLogo />
+        </Link>
+      </div>
 
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-0.5">
         <nav aria-label="Navegación principal" className="space-y-1">
-          <p className="text-muted-foreground px-2.5 pb-1 text-[11px] font-semibold tracking-wider uppercase">
+          <p className="text-foreground px-2.5 pb-1 text-sm font-bold tracking-tight">
             Consultorio
           </p>
           {globalLinks.map((item) => {
@@ -153,7 +153,7 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onNavigate}
-                className={`focus-visible:ring-ring flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
+                className={`focus-visible:ring-ring flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                   item.isActive
                     ? "bg-primary text-primary-foreground shadow-xs"
                     : "text-foreground hover:bg-muted"
@@ -172,7 +172,7 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
             className="border-border space-y-1 border-t pt-4"
           >
             <div className="px-2.5 pb-1.5">
-              <p className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
+              <p className="text-foreground text-sm font-bold tracking-tight">
                 Historia clínica abierta
               </p>
               <p className="text-primary mt-0.5 truncate text-xs font-semibold">
@@ -186,7 +186,7 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={onNavigate}
-                  className={`focus-visible:ring-ring flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
+                  className={`focus-visible:ring-ring flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                     item.isActive
                       ? "bg-secondary text-secondary-foreground font-semibold"
                       : "text-foreground hover:bg-muted"
@@ -206,7 +206,7 @@ export function LeftSidebar({ onNavigate }: LeftSidebarProps) {
         )}
       </div>
 
-      <div className="border-border space-y-3 border-t pt-4">
+      <div className="border-border mt-3 shrink-0 space-y-2.5 border-t pt-3.5">
         {session && (
           <div className="border-border bg-muted/60 flex items-center gap-2.5 rounded-xl border px-3 py-2.5">
             <label

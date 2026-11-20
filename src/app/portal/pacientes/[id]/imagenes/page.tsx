@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { DiagnosticImagesView } from "@/components/portal/imagenes/DiagnosticImagesView";
 import { LoadingState } from "@/components/shared/ui/LoadingState";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Imágenes Diagnósticas",
   description:

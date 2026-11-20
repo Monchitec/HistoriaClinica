@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { DoctorPortalView } from "@/components/portal/dashboard/DoctorPortalView";
 import { LoadingState } from "@/components/shared/ui/LoadingState";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Portal Médico",
   description:

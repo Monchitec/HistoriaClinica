@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { MedicalHistoryView } from "@/components/portal/antecedentes/MedicalHistoryView";
 import { LoadingState } from "@/components/shared/ui/LoadingState";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Antecedentes y alergias",
   description:
